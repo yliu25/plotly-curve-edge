@@ -1,10 +1,11 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import numpy as np
 
-#%% generate curved edge
+## generate curved edge
 def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
-    ## k defines how curved the edge is
+    ## k defines the distance between the top of the arc of the edge
+        ## to the perpendicular bisector
+        ## defines how curved the edge is
+    ## curve_dir is the direction of the bent of the curve - to left or right
     
     curve_dir = curve_dir.upper()
     
@@ -12,7 +13,7 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
     mid_x = tgt_x + (rlt_x - tgt_x) / 2.0
     mid_y = tgt_y + (rlt_y - tgt_y) / 2.0
 
-    ## the perpendicular bisector line of target type nodes and related type nodes
+    ## the perpendicular bisector line of target nodes and related nodes
     a = 0 if rlt_x == tgt_x else (tgt_x - rlt_x) / (rlt_y - tgt_y) ## gradient
     b = mid_y - a * mid_x ## intersect
 
@@ -51,13 +52,14 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
 
     ## array of 100 increasing radian
     radian_arr = np.linspace(tgt_radian, rlt_radian, 100)
+    
     ## find coords of these points on curved edge
     edge_x_all = np.cos(radian_arr) * r + ctr_x
     edge_y_all = np.sin(radian_arr) * r + ctr_y
     
     return edge_x_all, edge_y_all
 
-#%% generate straight edge
+## generate straight edge
 def edge_line(tgt_x, tgt_y, rlt_x, rlt_y):
     if rlt_x != tgt_x:
         a = (rlt_y - tgt_y) / (rlt_x - tgt_x)
