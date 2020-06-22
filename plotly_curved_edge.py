@@ -71,16 +71,3 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
     edge_y_all = np.sin(radian_arr) * r + ctr_y
     
     return edge_x_all, edge_y_all
-
-## generate straight edge
-def edge_line(tgt_x, tgt_y, rlt_x, rlt_y):
-    if rlt_x != tgt_x:
-        a = (rlt_y - tgt_y) / (rlt_x - tgt_x)
-        b = rlt_y - a * rlt_x
-        edge_x_all = np.linspace(tgt_x, rlt_x, 100)
-        edge_y_all = a * edge_x_all + b
-    else:
-        edge_x_all = np.empty(100); edge_x_all.fill(tgt_x)
-        edge_y_all = np.linspace(tgt_y, rlt_y, 100)
-        
-    return edge_x_all, edge_y_all
