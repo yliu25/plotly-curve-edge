@@ -1,6 +1,5 @@
 import numpy as np
 
-## generate curved edge
 def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
     ## k defines the distance between the top of the arc of the edge
         ## to the perpendicular bisector
@@ -14,16 +13,24 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
     mid_y = tgt_y + (rlt_y - tgt_y) / 2.0
 
     ## the perpendicular bisector line of target nodes and related nodes
-    a = 0 if rlt_x == tgt_x else (tgt_x - rlt_x) / (rlt_y - tgt_y) ## gradient
+    a = (tgt_x - rlt_x) / (rlt_y - tgt_y - 1e-5) ## gradient - modified in case 0
     b = mid_y - a * mid_x ## intersect
 
     ## we want a point which is
         ## the top of the arc of the curved edge
         ## on the perpendicular bisector
-    
-    arc_x = mid_x - np.sqrt(np.power(k, 2) / (np.power(a, 2) + 1)) * (1 if curve_dir == "LEFT" else -1)
-    arc_y = a * arc_x + b
 
+    mid_x_adj = np.sqrt(np.power(k, 2) / (np.power(a, 2) + 1))
+
+    if rlt_y > tgt_y:
+        arc_x = mid_x - mid_x_adj * (1 if curve_dir == "LEFT" else -1)
+    else:
+        arc_x = mid_x - mid_x_adj * (-1 if curve_dir == "LEFT" else 1)
+    arc_y = a * arc_x + b
+    
+    nodes_trace.append(go.Scatter(x = [arc_x], y = [arc_y],
+                              mode = "markers", marker = {"color": "green"}))
+    
     ## find the circle that goes through target nodes, related nodes and arc top nodes
     params = np.array([[2 * tgt_x, 2 * tgt_y, 1],\
                        [2 * rlt_x, 2 * rlt_y, 1],\
@@ -38,20 +45,26 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
     ctr_x = - a2
     ctr_y = - b2
     r = np.sqrt(np.power(tgt_x - ctr_x, 2) + np.power(tgt_y - ctr_y, 2))
-
+    
     ## find the radian of target and related node, starting counter-clockwise from positive x
-    if tgt_y <= ctr_y:
-        tgt_radian = 2 * np.pi - np.arccos((tgt_x - ctr_x) / r)
-    else:
-        tgt_radian = np.pi * (0 if curve_dir == "LEFT" else 2) + np.arccos((tgt_x - ctr_x) / r)
-
-    if rlt_y <= ctr_y:
-        rlt_radian = 2 * np.pi - np.arccos((rlt_x - ctr_x) / r)
-    else:
-        rlt_radian = np.pi * (0 if curve_dir == "LEFT" else 2) + np.arccos((rlt_x - ctr_x) / r)
-
+    tgt_radian_x_pos_acute = np.arccos((tgt_x - ctr_x) / r)
+    tgt_radian = tgt_radian_x_pos_acute if tgt_y > ctr_y else 2 * np.pi - tgt_radian_x_pos_acute
+    
+    arc_radian_x_pos_acute = np.arccos((arc_x - ctr_x) / r)
+    arc_radian = arc_radian_x_pos_acute if arc_y > ctr_y else 2 * np.pi - arc_radian_x_pos_acute
+    
+    rlt_radian_x_pos_acute = np.arccos((rlt_x - ctr_x) / r)
+    rlt_radian = rlt_radian_x_pos_acute if rlt_y > ctr_y else 2 * np.pi - rlt_radian_x_pos_acute
+    
+    radian_min = np.amin([tgt_radian, rlt_radian])
+    radian_max = np.amax([tgt_radian, rlt_radian])
+    
+    ## arc should always between the two radian, or we should increase the min by 2 pi
+    if not (radian_min < arc_radian < radian_max):
+        radian_min = radian_min + 2 * np.pi
+    
     ## array of 100 increasing radian
-    radian_arr = np.linspace(tgt_radian, rlt_radian, 100)
+    radian_arr = np.linspace(radian_min, radian_max, 100)
     
     ## find coords of these points on curved edge
     edge_x_all = np.cos(radian_arr) * r + ctr_x
