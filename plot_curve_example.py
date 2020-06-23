@@ -78,4 +78,5 @@ fig.update_yaxes(showticklabels = False, showgrid = False, zeroline = False)
 fig.update_layout(yaxis = dict(scaleanchor = "x", scaleratio = 1),
                   showlegend = False,
                   width = 500, height = 500, margin = {"l": 5, "r": 5, "t": 5, "b": 5},
-                  annotations = edges_anno)
+                  annotations = edges_anno,
+                  plot_bgcolor = "white")
