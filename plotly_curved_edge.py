@@ -13,7 +13,7 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, ratio = 0.2, marker_size =
     k = dist / 2 * np.tan(ratio * np.pi) 
     
     ## adjust with marker radius so that there is no overlap
-    pxl_to_dist_r = marker_size * 0.027 / 4
+    pxl_to_dist_r = marker_size * 0.0027
     
     if rlt_y > tgt_y:
         tgt_x = tgt_x - pxl_to_dist_r * (1 if curve_dir == "LEFT" else -1)
@@ -66,13 +66,13 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, ratio = 0.2, marker_size =
     r = np.sqrt(np.power(tgt_x - ctr_x, 2) + np.power(tgt_y - ctr_y, 2))
     
     ## find the radian of target and related node, starting counter-clockwise from positive x
-    tgt_radian_x_pos_acute = np.arccos((tgt_x - ctr_x) / r)
+    tgt_radian_x_pos_acute = np.arccos(round(tgt_x - ctr_x, 5) / r)
     tgt_radian = tgt_radian_x_pos_acute if tgt_y > ctr_y else 2 * np.pi - tgt_radian_x_pos_acute
     
-    arc_radian_x_pos_acute = np.arccos((arc_x - ctr_x) / r)
+    arc_radian_x_pos_acute = np.arccos(round(arc_x - ctr_x, 5) / r)
     arc_radian = arc_radian_x_pos_acute if arc_y > ctr_y else 2 * np.pi - arc_radian_x_pos_acute
     
-    rlt_radian_x_pos_acute = np.arccos((rlt_x - ctr_x) / r)
+    rlt_radian_x_pos_acute = np.arccos(round(rlt_x - ctr_x, 5) / r)
     rlt_radian = rlt_radian_x_pos_acute if rlt_y > ctr_y else 2 * np.pi - rlt_radian_x_pos_acute
     
     radian_min = np.amin([tgt_radian, rlt_radian])
