@@ -1,12 +1,34 @@
 import numpy as np
 
-def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
-    ## k defines the distance between the top of the arc of the edge
-        ## to the perpendicular bisector
-        ## defines how curved the edge is
-    ## curve_dir is the direction of the bent of the curve - to left or right
+## generate curved edge
+def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, ratio = 0.2, marker_size = 15):
+    ## target coords are the coords of source node
+    ## relation coords are the coords of relation node
+    ## curve_dir is the direction of the bent of the curve when we defines the [source node, relation node] as direction - to left or right
+    ## ratio defines how bent the arc is
+    ## marker_size helps to adjust edge position
     
     curve_dir = curve_dir.upper()
+    dist = np.sqrt(np.power(tgt_x - rlt_x, 2) + np.power(tgt_y - rlt_y, 2))
+    k = dist / 2 * np.tan(ratio * np.pi) 
+    
+    ## adjust with marker radius so that there is no overlap
+    pxl_to_dist_r = marker_size * 0.027 / 4
+    
+    if rlt_y > tgt_y:
+        tgt_x = tgt_x - pxl_to_dist_r * (1 if curve_dir == "LEFT" else -1)
+        rlt_x = rlt_x - pxl_to_dist_r * (1 if curve_dir == "LEFT" else -1)
+        
+    else:
+        tgt_x = tgt_x - pxl_to_dist_r * (-1 if curve_dir == "LEFT" else 1)
+        rlt_x = rlt_x - pxl_to_dist_r * (-1 if curve_dir == "LEFT" else 1)
+    
+    if rlt_x > tgt_x:
+        tgt_y = tgt_y + pxl_to_dist_r * (1 if curve_dir == "LEFT" else -1)
+        rlt_y = rlt_y + pxl_to_dist_r * (1 if curve_dir == "LEFT" else -1)
+    else:
+        tgt_y = tgt_y + pxl_to_dist_r * (-1 if curve_dir == "LEFT" else 1)
+        rlt_y = rlt_y + pxl_to_dist_r * (-1 if curve_dir == "LEFT" else 1)
     
     ## middle point coords
     mid_x = tgt_x + (rlt_x - tgt_x) / 2.0
@@ -27,9 +49,6 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
     else:
         arc_x = mid_x - mid_x_adj * (-1 if curve_dir == "LEFT" else 1)
     arc_y = a * arc_x + b
-    
-    nodes_trace.append(go.Scatter(x = [arc_x], y = [arc_y],
-                              mode = "markers", marker = {"color": "green"}))
     
     ## find the circle that goes through target nodes, related nodes and arc top nodes
     params = np.array([[2 * tgt_x, 2 * tgt_y, 1],\
@@ -59,7 +78,7 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, k = 0.8):
     radian_min = np.amin([tgt_radian, rlt_radian])
     radian_max = np.amax([tgt_radian, rlt_radian])
     
-    ## arc should always between the two radian, or we should increase the min by 2 pi
+    ## arc should always between the target and relation radian, or we should increase the smaller one by 2 pi
     if not (radian_min < arc_radian < radian_max):
         radian_min = radian_min + 2 * np.pi
     
