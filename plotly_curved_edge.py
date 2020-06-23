@@ -18,17 +18,18 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, ratio = 0.2, marker_size =
     if rlt_y > tgt_y:
         tgt_x = tgt_x - pxl_to_dist_r * (1 if curve_dir == "LEFT" else -1)
         rlt_x = rlt_x - pxl_to_dist_r * (1 if curve_dir == "LEFT" else -1)
-        
-    else:
+    elif rlt_y < tgt_y:
         tgt_x = tgt_x - pxl_to_dist_r * (-1 if curve_dir == "LEFT" else 1)
         rlt_x = rlt_x - pxl_to_dist_r * (-1 if curve_dir == "LEFT" else 1)
+    ## else no adjustment   
     
     if rlt_x > tgt_x:
         tgt_y = tgt_y + pxl_to_dist_r * (1 if curve_dir == "LEFT" else -1)
         rlt_y = rlt_y + pxl_to_dist_r * (1 if curve_dir == "LEFT" else -1)
-    else:
+    elif rlt_x < tgt_x:
         tgt_y = tgt_y + pxl_to_dist_r * (-1 if curve_dir == "LEFT" else 1)
         rlt_y = rlt_y + pxl_to_dist_r * (-1 if curve_dir == "LEFT" else 1)
+    ## else no adjustment
     
     ## middle point coords
     mid_x = tgt_x + (rlt_x - tgt_x) / 2.0
