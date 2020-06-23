@@ -1,4 +1,4 @@
 # plotly-edge
-> Generate a curved or straight edge that connects two points in plotly, when there is no data point in bewteen.
+> Generate a curved edge that connects two points in plotly, when there is no data point in bewteen.
 
 ## Example
