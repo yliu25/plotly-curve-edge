@@ -90,4 +90,7 @@ def edge_curve(tgt_x, tgt_y, rlt_x, rlt_y, curve_dir, ratio = 0.2, marker_size =
     edge_x_all = np.cos(radian_arr) * r + ctr_x
     edge_y_all = np.sin(radian_arr) * r + ctr_y
     
-    return edge_x_all, edge_y_all
+    if radian_max == tgt_radian:
+        return edge_x_all[::-1], edge_y_all[::-1]
+    else:
+        return edge_x_all, edge_y_all
